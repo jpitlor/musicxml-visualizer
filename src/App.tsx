@@ -4,7 +4,7 @@ import { type ChangeEvent, useState } from "react";
 
 function App() {
   const [xml, setXml] = useState("");
-  const [type, setType] = useState<ViewType>(View.SheetMusic);
+  const [type, setType] = useState<ViewType>(View.GuitarHero);
 
   function onXmlChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.item(0);
@@ -73,11 +73,11 @@ function App() {
         </div>
       </form>
       <div className="bg-white mt-4 p-4 rounded shadow">
-        {xml ? (
-          <MusicXml xml={xml} view={type} />
-        ) : (
-          "Select a file to display the sheet music"
-        )}
+        {/*{xml ? (*/}
+        <MusicXml xml={xml} view={type} />
+        {/*) : (*/}
+        {/*  "Select a file to display the sheet music"*/}
+        {/*)}*/}
       </div>
     </div>
   );

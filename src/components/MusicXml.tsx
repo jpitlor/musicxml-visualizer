@@ -1,6 +1,7 @@
-import { View, type ViewType } from "../enums/view.ts";
+import { View, type ViewType } from "../enums/view";
 import classNames from "classnames";
-import SheetMusic from "./SheetMusic.tsx";
+import SheetMusic from "./SheetMusic";
+import GuitarHero from "./GuitarHero";
 
 interface MusicXmlProps {
   xml: string;
@@ -14,7 +15,7 @@ export default function MusicXml({ xml, view, className }: MusicXmlProps) {
   }
 
   if (view === View.GuitarHero) {
-    return null;
+    return <GuitarHero xml={xml} className={className} />;
   }
 
   return (
