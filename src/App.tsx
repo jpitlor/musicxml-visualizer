@@ -1,5 +1,5 @@
 import MusicXml from "./components/MusicXml.tsx";
-import { View, type ViewType } from "./enums/view.ts";
+import { View, type ViewType } from "./constants/view.ts";
 import { type ChangeEvent, useState } from "react";
 
 function App() {

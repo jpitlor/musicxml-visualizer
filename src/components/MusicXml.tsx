@@ -1,4 +1,4 @@
-import { View, type ViewType } from "../enums/view";
+import { View, type ViewType } from "../constants/view";
 import classNames from "classnames";
 import SheetMusic from "./SheetMusic";
 import GuitarHero from "./GuitarHero";
