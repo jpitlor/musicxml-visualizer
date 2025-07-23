@@ -45,7 +45,7 @@ export default function Song({ osmd }: SongProps) {
       for (let i = 0; i < voices.length; i++) {
         const v = voices[i];
         const notes = v.Notes;
-        const bpm = notes[0].SourceMeasure.TempoInBPM;
+        const bpm = notes[0].SourceMeasure.TempoInBPM || 60;
         for (let j = 0; j < notes.length; j++) {
           const note = notes[j];
           if (note != null && note.halfTone != 0 && !note.isRest()) {
@@ -53,9 +53,8 @@ export default function Song({ osmd }: SongProps) {
               id: uuidv4(),
               note: note.halfTone,
               length: (note.Length.RealValue * 4 * 60) / bpm,
-              time: (iterator.currentTimeStamp.RealValue * 4 * 60) / bpm,
-              visibleTime:
-                ((iterator.currentTimeStamp.RealValue - 4) * 4 * 60) / bpm,
+              time: ((iterator.currentTimeStamp.RealValue + 1) * 4 * 60) / bpm,
+              visibleTime: (iterator.currentTimeStamp.RealValue * 4 * 60) / bpm,
             });
           }
         }
@@ -80,7 +79,7 @@ export default function Song({ osmd }: SongProps) {
           (note.time - note.visibleTime);
         circle.position.x = lerp(
           0,
-          Math.cos(RAD_OF_225_DEG + radGap * notePath) * ((WIDTH * 2) / 3),
+          Math.cos(RAD_OF_225_DEG + radGap * notePath) * WIDTH,
           a,
         );
         circle.position.y = lerp(HEIGHT * 2, HEIGHT * -1, a);
@@ -98,7 +97,8 @@ export default function Song({ osmd }: SongProps) {
           userData={n}
           key={n.id}
         >
-          <circleGeometry />
+          <meshStandardMaterial color="blue" />
+          <circleGeometry args={[0.5]} />
         </mesh>
       ))}
     </React.Fragment>

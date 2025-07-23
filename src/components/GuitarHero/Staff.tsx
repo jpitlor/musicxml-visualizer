@@ -21,11 +21,7 @@ export default function Staff({ lineCount }: StaffProps) {
       <LineGeometry
         points={[
           [0, HEIGHT * 2, 0],
-          [
-            Math.cos(RAD_OF_225_DEG + radGap * i) * ((WIDTH * 2) / 3),
-            HEIGHT * -1,
-            0,
-          ],
+          [Math.cos(RAD_OF_225_DEG + radGap * i) * WIDTH, HEIGHT * -1, 0],
         ]}
       />
     </Line2>
