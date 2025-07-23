@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Mesh } from "three";
 import { v4 as uuidv4 } from "uuid";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import uniqBy from "lodash.uniqby";
 import { lerp } from "three/src/math/MathUtils";
 import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
@@ -23,6 +23,7 @@ interface SongProps {
 export default function Song({ osmd }: SongProps) {
   const noteRefs = useRef<Map<string, Mesh>>(new Map());
   const [notes, setNotes] = useState<Note[]>([]);
+  const { clock } = useThree();
   const notePaths = uniqBy(notes, "note").map((n) => n.note);
   const radGap = Math.PI / (3 * (notePaths.length - 1));
 
@@ -63,7 +64,8 @@ export default function Song({ osmd }: SongProps) {
     }
 
     setNotes(allNotes);
-  }, [osmd]);
+    clock.start();
+  }, [osmd, clock]);
 
   useFrame(({ clock }) => {
     for (const circle of noteRefs.current.values()) {
@@ -76,15 +78,12 @@ export default function Song({ osmd }: SongProps) {
         const a =
           (clock.elapsedTime - note.visibleTime) /
           (note.time - note.visibleTime);
-        console.log(a, circle.position);
         circle.position.x = lerp(
           0,
           Math.cos(RAD_OF_225_DEG + radGap * notePath) * ((WIDTH * 2) / 3),
           a,
         );
         circle.position.y = lerp(HEIGHT * 2, HEIGHT * -1, a);
-      } else {
-        console.log(clock.elapsedTime, note.visibleTime);
       }
     }
   });
