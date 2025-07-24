@@ -7,6 +7,7 @@ import { lerp } from "three/src/math/MathUtils";
 import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import Staff from "./Staff.tsx";
 import { HEIGHT, RAD_OF_225_DEG, WIDTH } from "../../constants/canvas.ts";
+import useAudioPlayer from "../../hooks/useAudioPlayer.ts";
 
 interface Note {
   id: string;
@@ -21,50 +22,95 @@ interface SongProps {
 }
 
 export default function Song({ osmd }: SongProps) {
+  const [pitches, setPitches] = useState<number[]>([]);
   const noteRefs = useRef<Map<string, Mesh>>(new Map());
   const [notes, setNotes] = useState<Note[]>([]);
   const { clock } = useThree();
-  const notePaths = uniqBy(notes, "note").map((n) => n.note);
-  const radGap = Math.PI / (3 * (notePaths.length - 1));
+  const radGap = Math.PI / (3 * (pitches.length - 1));
+  const audioPlayer = useAudioPlayer(0.3);
 
   const setRef = useCallback(
     (mesh: Mesh) => {
       noteRefs.current.set((mesh.userData as Note).id, mesh);
-      return () => noteRefs.current.delete(mesh.name);
+      return () => noteRefs.current.delete((mesh.userData as Note).id);
     },
     [noteRefs],
   );
 
   useEffect(() => {
-    const allNotes = [];
     osmd.cursor.reset();
-    const iterator = osmd.cursor.iterator;
 
-    while (!iterator.EndReached) {
-      const voices = iterator.CurrentVoiceEntries;
+    const newPitches: number[] = [];
+    while (!osmd.cursor.iterator.EndReached) {
+      const voices = osmd.cursor.iterator.CurrentVoiceEntries;
       for (let i = 0; i < voices.length; i++) {
-        const v = voices[i];
-        const notes = v.Notes;
-        const bpm = notes[0].SourceMeasure.TempoInBPM || 60;
+        const notes = voices[i].Notes;
         for (let j = 0; j < notes.length; j++) {
           const note = notes[j];
-          if (note != null && note.halfTone != 0 && !note.isRest()) {
-            allNotes.push({
-              id: uuidv4(),
-              note: note.halfTone,
-              length: (note.Length.RealValue * 4 * 60) / bpm,
-              time: ((iterator.currentTimeStamp.RealValue + 1) * 4 * 60) / bpm,
-              visibleTime: (iterator.currentTimeStamp.RealValue * 4 * 60) / bpm,
-            });
+          if (
+            !note ||
+            note.halfTone === 0 ||
+            note.isRest() ||
+            newPitches.contains(note.halfTone)
+          ) {
+            continue;
           }
+
+          newPitches.push(note.halfTone);
+        }
+      }
+      osmd.cursor.iterator.moveToNext();
+    }
+
+    newPitches.sort();
+    setPitches(newPitches);
+    osmd.cursor.reset();
+    clock.start();
+  }, [osmd, clock]);
+
+  useEffect(() => {
+    const newNotes: Note[] = [];
+    const iterator = osmd.cursor.iterator;
+
+    while (
+      !iterator.EndReached && // there's more notes
+      (newNotes.length === 0 ||
+        notes.length === 0 ||
+        newNotes.last().time - notes.last().time < 10) // and we haven't built a 10 second buffer
+    ) {
+      const voices = iterator.CurrentVoiceEntries;
+      for (let i = 0; i < voices.length; i++) {
+        const notes = voices[i].Notes;
+        const beatsPerMinute = notes[0].SourceMeasure.TempoInBPM || 60;
+        const secondsPerMeasure =
+          (notes[0].SourceMeasure.ActiveTimeSignature.Numerator * 60) /
+          beatsPerMinute;
+
+        for (let j = 0; j < notes.length; j++) {
+          const note = notes[j];
+          if (!(note != null && note.halfTone != 0 && !note.isRest())) {
+            continue;
+          }
+
+          newNotes.push({
+            id: uuidv4(),
+            note: note.halfTone,
+            length: note.Length.RealValue * secondsPerMeasure,
+            // The note should show up on screen when it should
+            visibleTime:
+              iterator.currentTimeStamp.RealValue * secondsPerMeasure,
+            // But delay when it should actually play by one measure
+            time: (iterator.currentTimeStamp.RealValue + 1) * secondsPerMeasure,
+          });
         }
       }
       iterator.moveToNext();
     }
 
-    setNotes(allNotes);
-    clock.start();
-  }, [osmd, clock]);
+    if (newNotes.length > 0) {
+      setNotes((x) => x.concat(newNotes));
+    }
+  }, [osmd, clock, notes]);
 
   useFrame(({ clock }) => {
     for (const circle of noteRefs.current.values()) {
@@ -73,7 +119,7 @@ export default function Song({ osmd }: SongProps) {
         clock.elapsedTime >= note.visibleTime &&
         clock.elapsedTime < note.time
       ) {
-        const notePath = notePaths.indexOf(note.note);
+        const notePath = pitches.indexOf(note.note);
         const a =
           (clock.elapsedTime - note.visibleTime) /
           (note.time - note.visibleTime);
@@ -84,12 +130,23 @@ export default function Song({ osmd }: SongProps) {
         );
         circle.position.y = lerp(HEIGHT * 2, HEIGHT * -1, a);
       }
+
+      if (note.time - clock.elapsedTime < 0.1) {
+        const frequency = Math.pow(2, (note.note - 48) / 12.0) * 440;
+        audioPlayer.playNote(frequency, note.length * 1000);
+        setNotes((n) => {
+          const i = n.findIndex((x) => x.id === note.id);
+          const newNotes = [...notes];
+          newNotes.splice(i, 1);
+          return newNotes;
+        });
+      }
     }
   });
 
   return (
     <React.Fragment>
-      <Staff lineCount={notePaths.length} />
+      <Staff lineCount={pitches.length} />
       {notes.map((n) => (
         <mesh
           ref={setRef}
