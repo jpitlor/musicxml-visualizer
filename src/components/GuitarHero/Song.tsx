@@ -81,7 +81,10 @@ export default function Song({ osmd }: SongProps) {
       const voices = iterator.CurrentVoiceEntries;
       for (let i = 0; i < voices.length; i++) {
         const notes = voices[i].Notes;
-        const beatsPerMinute = notes[0].SourceMeasure.TempoInBPM || 60;
+        const beatsPerMinute =
+          notes[0].SourceMeasure.TempoInBPM ||
+          osmd.Sheet.getExpressionsStartTempoInBPM() ||
+          60;
         const secondsPerMeasure =
           (notes[0].SourceMeasure.ActiveTimeSignature.Numerator * 60) /
           beatsPerMinute;
@@ -132,7 +135,7 @@ export default function Song({ osmd }: SongProps) {
       }
 
       if (note.time - clock.elapsedTime < 0.1) {
-        const frequency = Math.pow(2, (note.note - 48) / 12.0) * 440;
+        const frequency = Math.pow(2, (note.note - 49) / 12.0) * 440;
         audioPlayer.playNote(frequency, note.length * 1000);
         setNotes((n) => {
           const i = n.findIndex((x) => x.id === note.id);

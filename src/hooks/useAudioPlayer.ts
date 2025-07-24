@@ -20,7 +20,7 @@ export default function useAudioPlayer(gain: number): AudioResult {
       }
 
       const oscillator = audioContext.createOscillator();
-      oscillator.type = "triangle";
+      oscillator.type = "sine";
       oscillator.frequency.value = frequency;
       oscillator.connect(gainNode);
       return oscillator;
