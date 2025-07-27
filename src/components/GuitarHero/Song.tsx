@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Mesh } from "three";
 import { v4 as uuidv4 } from "uuid";
 import { useFrame, useThree } from "@react-three/fiber";
-import uniqBy from "lodash.uniqby";
 import { lerp } from "three/src/math/MathUtils";
 import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import Staff from "./Staff.tsx";
@@ -27,7 +26,7 @@ export default function Song({ osmd }: SongProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const { clock } = useThree();
   const radGap = Math.PI / (3 * (pitches.length - 1));
-  const audioPlayer = useAudioPlayer(0.3);
+  const { loadInstrument, playNote, status } = useAudioPlayer();
 
   const setRef = useCallback(
     (mesh: Mesh) => {
@@ -38,6 +37,10 @@ export default function Song({ osmd }: SongProps) {
   );
 
   useEffect(() => {
+    if (status !== "success") {
+      return;
+    }
+
     osmd.cursor.reset();
 
     const newPitches: number[] = [];
@@ -64,9 +67,11 @@ export default function Song({ osmd }: SongProps) {
 
     newPitches.sort();
     setPitches(newPitches);
-    osmd.cursor.reset();
-    clock.start();
-  }, [osmd, clock]);
+    loadInstrument("acoustic_grand_piano").then(() => {
+      osmd.cursor.reset();
+      clock.start();
+    });
+  }, [osmd, clock, status, loadInstrument]);
 
   useEffect(() => {
     const newNotes: Note[] = [];
@@ -135,8 +140,7 @@ export default function Song({ osmd }: SongProps) {
       }
 
       if (note.time - clock.elapsedTime < 0.1) {
-        const frequency = Math.pow(2, (note.note - 49) / 12.0) * 440;
-        audioPlayer.playNote(frequency, note.length * 1000);
+        playNote("acoustic_grand_piano", note.note, note.length);
         setNotes((n) => {
           const i = n.findIndex((x) => x.id === note.id);
           const newNotes = [...notes];

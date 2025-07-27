@@ -1,72 +1,68 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { instrument } from "soundfont-player";
+import type { InstrumentName, Player } from "soundfont-player";
 
 export type AudioStatus = "uninitialized" | "success" | "error";
 
 interface AudioResult {
+  loadInstrument: (instrument: InstrumentName) => Promise<void>;
+  playNote: (
+    instrument: InstrumentName,
+    frequency: number,
+    durationMs: number,
+  ) => void;
   status: AudioStatus;
-  playNote: (frequency: number, durationMs: number) => void;
   error?: string;
 }
 
-export default function useAudioPlayer(gain: number): AudioResult {
+export default function useAudioPlayer(): AudioResult {
+  const [audioContext, setAudioContext] = useState<AudioContext | undefined>();
   const [status, setStatus] = useState<AudioStatus>("uninitialized");
   const [error, setError] = useState<string | undefined>();
-  const [audioContext, setAudioContext] = useState<AudioContext | undefined>();
-  const [gainNode, setGainNode] = useState<GainNode | undefined>();
-  const makeOscillator = useCallback(
-    (frequency: number) => {
-      if (!audioContext || !gainNode) {
-        return undefined;
+  const instruments = useRef<Map<InstrumentName, Player>>(
+    new Map<InstrumentName, Player>(),
+  );
+
+  const loadInstrument = useCallback(
+    async (instrumentName: InstrumentName) => {
+      if (!audioContext) {
+        return;
       }
 
-      const oscillator = audioContext.createOscillator();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gainNode);
-      return oscillator;
+      const player = await instrument(audioContext, instrumentName);
+      instruments.current.set(instrumentName, player);
     },
-    [audioContext, gainNode],
+    [audioContext],
+  );
+
+  const playNote = useCallback(
+    (instrument: InstrumentName, noteNumber: number, duration: number) => {
+      if (!audioContext) {
+        return;
+      }
+
+      const player = instruments.current.get(instrument);
+      if (!player) {
+        return;
+      }
+
+      player.play(noteNumber.toString(), audioContext.currentTime, {
+        duration,
+      });
+    },
+    [audioContext],
   );
 
   useEffect(() => {
-    if (status !== "uninitialized") {
-      return;
-    }
-
     if (!window.AudioContext) {
       setError("No AudioContext");
       setStatus("error");
       return;
     }
 
-    const _audioContext = new window.AudioContext();
-    const _gainNode = _audioContext.createGain();
-    _gainNode.connect(_audioContext.destination);
-
-    setAudioContext(_audioContext);
-    setGainNode(_gainNode);
+    setAudioContext(new window.AudioContext());
     setStatus("success");
-  }, [status]);
+  }, []);
 
-  useEffect(() => {
-    if (!gainNode) {
-      return;
-    }
-
-    gainNode.gain.value = gain;
-  }, [gain, gainNode]);
-
-  function playNote(frequency: number, durationMs: number) {
-    const oscillator = makeOscillator(frequency);
-    if (!oscillator) {
-      return;
-    }
-
-    oscillator.start();
-    setTimeout(() => {
-      oscillator.stop();
-    }, durationMs);
-  }
-
-  return { status, error, playNote };
+  return { loadInstrument, playNote, status, error };
 }
