@@ -1,10 +1,32 @@
 import MusicXml from "./components/MusicXml.tsx";
 import { View, type ViewType } from "./constants/view.ts";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useMemo, useState } from "react";
+import makeParts from "./utils/makeParts.ts";
+import type { Part } from "./types";
 
 function App() {
-  const [xml, setXml] = useState("");
+  const [xml, setXml] = useState<string | undefined>();
   const [type, setType] = useState<ViewType>(View.GuitarHero);
+  const [playerCount, setPlayerCount] = useState(1);
+  const parts = useMemo(() => {
+    if (!xml) {
+      return [] as Part[];
+    }
+
+    const _parts = makeParts(xml, playerCount);
+    if (!_parts) {
+      return [] as Part[];
+    }
+
+    return _parts.map(
+      (part) =>
+        ({
+          display: true,
+          // instrument: "acoustic_grand_piano",
+          notes: part,
+        }) as Part,
+    );
+  }, [xml, playerCount]);
 
   function onXmlChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.item(0);
@@ -12,6 +34,7 @@ function App() {
       return;
     }
 
+    // TODO: Support compressed files
     const reader = new FileReader();
     reader.readAsText(file, "UTF-8");
     reader.onload = function (evt) {
@@ -23,8 +46,7 @@ function App() {
         setXml(evt.target.result);
       } else {
         const decoder = new TextDecoder("utf-8");
-        const result = decoder.decode(evt.target.result);
-        setXml(result);
+        setXml(decoder.decode(evt.target.result));
       }
     };
   }
@@ -37,6 +59,10 @@ function App() {
     }
 
     setType(item.value);
+  }
+
+  function onPlayerCountChange(e: ChangeEvent<HTMLInputElement>) {
+    setPlayerCount(+e.target.value);
   }
 
   return (
@@ -71,10 +97,26 @@ function App() {
             <option value={View.GuitarHero}>Guitar Hero</option>
           </select>
         </div>
+        <div className="flex flex-row items-center mt-2">
+          <label htmlFor="playerCount">
+            <strong>Number of Players</strong>
+          </label>
+          <input
+            name="playerCount"
+            id="playerCount"
+            type="number"
+            min="1"
+            max="9"
+            step="1"
+            onChange={onPlayerCountChange}
+            className="ml-4 border-2 border-black py-1 px-2 rounded shadow"
+            value={playerCount}
+          />
+        </div>
       </form>
       <div className="bg-white mt-4 p-4 rounded shadow">
-        {xml ? (
-          <MusicXml xml={xml} view={type} />
+        {parts.length > 0 && !!xml ? (
+          <MusicXml parts={parts} xml={xml} view={type} />
         ) : (
           "Select a file to display the sheet music"
         )}

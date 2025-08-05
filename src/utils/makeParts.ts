@@ -3,6 +3,7 @@ import {
   type CuedGraceNote,
   type CuedNote,
   MeasurePartwise,
+  Note,
   PartPartwise,
   Pitch,
   Rest,
@@ -16,10 +17,11 @@ import { chunk, uniq } from "lodash";
 export default function makeParts(
   xml: string,
   numberOfPlayers: number,
-): string[] | undefined {
+): number[][] | undefined {
   const piece = MusicXML.parse(xml);
   const root = piece.getRoot();
   if (!asserts.isScorePartwise(root)) {
+    console.warn("Timewise scores not supported");
     return undefined;
   }
 
@@ -27,15 +29,16 @@ export default function makeParts(
     .getParts()
     .flatMap((part) => part.getMeasures())
     .flatMap((m) => m.contents)
+    .flat()
     .filter((c) => asserts.isNote(c))
     .map((n) => getPitch(n.getVariation()))
     .filter((p) => p != null);
   const uniqueNotes = uniq(noteSemitones);
 
   // TODO: Partition based on note frequency too
-  return chunk(uniqueNotes, uniqueNotes.length / numberOfPlayers)
-    .map((slice) => filterScoreForNotes(root, slice))
-    .map((score) => score.serialize());
+  return chunk(uniqueNotes, uniqueNotes.length / numberOfPlayers);
+  // .map((slice) => filterScoreForNotes(root, slice))
+  // .map((score) => score.serialize());
 }
 
 function getPitch(
@@ -55,6 +58,23 @@ function getPitch(
   }
 
   return pitchToSemitone(pitch);
+}
+
+function asRest(note: Note): Note {
+  const variation = note.getVariation();
+  if (asserts.isTiedNote(variation)) {
+    variation[1] = new Rest();
+  } else if (
+    asserts.isCuedNote(variation) ||
+    asserts.isTiedGraceNote(variation)
+  ) {
+    variation[2] = new Rest();
+  } else if (asserts.isCuedGraceNote(variation)) {
+    variation[3] = new Rest();
+  }
+
+  note.setVariation(variation);
+  return note;
 }
 
 function pitchToSemitone(pitch: Pitch): number {
@@ -90,13 +110,17 @@ function filterScoreForNotes(
             (measure) =>
               new MeasurePartwise({
                 contents: [
-                  measure.getValues().filter((c) => {
+                  measure.getValues().map((c) => {
                     if (!asserts.isNote(c)) {
-                      return true;
+                      return c;
                     }
 
                     const semitone = getPitch(c.getVariation());
-                    return semitone == null || notes.contains(semitone);
+                    if (semitone == null || notes.contains(semitone)) {
+                      return c;
+                    }
+
+                    return asRest(c);
                   }),
                 ],
               }),
