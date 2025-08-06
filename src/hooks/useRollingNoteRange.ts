@@ -10,10 +10,15 @@ interface RollingNoteRange {
 
 export default function useRollingNoteRange(
   osmd: OpenSheetMusicDisplay,
+  doIfTrue: boolean,
 ): RollingNoteRange {
   const [notes, setNotes] = useState<Note[]>([]);
 
   useEffect(() => {
+    if (!doIfTrue) {
+      return;
+    }
+
     const _notes: Note[] = [];
     const iterator = osmd.cursor.iterator;
 
@@ -58,7 +63,7 @@ export default function useRollingNoteRange(
     if (_notes.length > 0) {
       setNotes((x) => x.concat(_notes));
     }
-  }, [osmd, notes]);
+  }, [osmd, notes, doIfTrue]);
 
   function removeNote(noteId: string) {
     setNotes((n) => {

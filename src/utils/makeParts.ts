@@ -80,9 +80,6 @@ function asRest(note: Note): Note {
 function pitchToSemitone(pitch: Pitch): number {
   const modifier = pitch.getAlter()?.getSemitones() ?? 0;
   const scaleOffset = [
-    "A",
-    "",
-    "B",
     "C",
     "",
     "D",
@@ -91,6 +88,10 @@ function pitchToSemitone(pitch: Pitch): number {
     "F",
     "",
     "G",
+    "",
+    "A",
+    "",
+    "B",
   ].indexOf(pitch.getStep().getStep());
   const octaveOffset = pitch.getOctave().getOctave() * 12;
 

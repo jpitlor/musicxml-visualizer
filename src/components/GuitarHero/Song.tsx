@@ -27,7 +27,7 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
         notes: pitches,
       },
     ] as Part[]);
-  const { notes, removeNote } = useRollingNoteRange(osmd);
+  const { notes, removeNote } = useRollingNoteRange(osmd, !!pitches);
   const { clock } = useThree();
   const { loadInstrument, playNote, status } = useAudioPlayer();
 
@@ -58,6 +58,15 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
       containerHeight / -2 +
       tileHeight * Math.floor(i / columnCount) +
       tileHeight / 2;
+    console.log("Rendering part notes " + part.notes.join(", "));
+    console.log("All notes: " + notes.map((n) => n.note).join(", "));
+    console.log(
+      "Filtered notes: " +
+        notes
+          .filter((n) => part.notes.contains(n.note))
+          .map((n) => n.note)
+          .join(", "),
+    );
     return (
       <React.Fragment key={`[${part.notes.join(",")}]`}>
         <Staff
@@ -76,8 +85,11 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
             );
 
             function afterPlay() {
+              console.log("Removing note " + staffLineIndex);
               removeNote(n.id);
             }
+
+            console.log("Rendering note " + staffLineIndex);
 
             return (
               <Note
