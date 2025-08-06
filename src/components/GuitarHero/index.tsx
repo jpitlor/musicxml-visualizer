@@ -1,9 +1,8 @@
 import { Canvas } from "@react-three/fiber";
 import Song from "./Song.tsx";
 import classNames from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
-import * as THREE from "three";
 import type { Part } from "../../types";
 import useElementSize from "../../hooks/useElementSize.ts";
 import SongContext from "../../context/SongContext.ts";
@@ -41,9 +40,7 @@ export default function GuitarHero({
       backend: "svg",
       drawTitle: false,
     });
-    // noinspection JSIgnoredPromiseFromCall
-    newOsmd.load(xml);
-    setOsmd(newOsmd);
+    newOsmd.load(xml).then(() => setOsmd(newOsmd));
   }, [xml]);
 
   return (

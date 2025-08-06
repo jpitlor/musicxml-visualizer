@@ -31,7 +31,6 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
   const { clock } = useThree();
   const { loadInstrument, playNote, status } = useAudioPlayer();
 
-  const radGap = Math.PI / (3 * ((pitches?.length ?? 2) - 1));
   const columnCount = Math.floor(Math.sqrt(parts?.length ?? 1));
   const rowCount = (parts?.length ?? 1) / columnCount;
   const tileWidth = containerWidth / columnCount;
@@ -79,6 +78,7 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
         {notes
           .filter((n) => part.notes.contains(n.note))
           .map((n) => {
+            const radGap = Math.PI / (3 * (part.notes.length - 1));
             const staffLineIndex = part.notes.indexOf(n.note);
             const leftOffset = Math.cos(
               RAD_OF_225_DEG + radGap * staffLineIndex,
@@ -88,8 +88,6 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
               console.log("Removing note " + staffLineIndex);
               removeNote(n.id);
             }
-
-            console.log("Rendering note " + staffLineIndex);
 
             return (
               <Note
