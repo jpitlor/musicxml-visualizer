@@ -2,12 +2,8 @@ import { asserts, MusicXML } from "@stringsync/musicxml";
 import {
   type CuedGraceNote,
   type CuedNote,
-  MeasurePartwise,
-  Note,
-  PartPartwise,
   Pitch,
   Rest,
-  ScorePartwise,
   type TiedGraceNote,
   type TiedNote,
   Unpitched,
@@ -60,23 +56,6 @@ function getPitch(
   return pitchToSemitone(pitch);
 }
 
-function asRest(note: Note): Note {
-  const variation = note.getVariation();
-  if (asserts.isTiedNote(variation)) {
-    variation[1] = new Rest();
-  } else if (
-    asserts.isCuedNote(variation) ||
-    asserts.isTiedGraceNote(variation)
-  ) {
-    variation[2] = new Rest();
-  } else if (asserts.isCuedGraceNote(variation)) {
-    variation[3] = new Rest();
-  }
-
-  note.setVariation(variation);
-  return note;
-}
-
 function pitchToSemitone(pitch: Pitch): number {
   const modifier = pitch.getAlter()?.getSemitones() ?? 0;
   const scaleOffset = [
@@ -96,40 +75,4 @@ function pitchToSemitone(pitch: Pitch): number {
   const octaveOffset = pitch.getOctave().getOctave() * 12;
 
   return octaveOffset + scaleOffset + modifier;
-}
-
-function filterScoreForNotes(
-  score: ScorePartwise,
-  notes: number[],
-): MusicXML<ScorePartwise> {
-  const filteredScore = MusicXML.createPartwise();
-  const parts = score.getParts().map(
-    (part) =>
-      new PartPartwise({
-        contents: [
-          part.getMeasures().map(
-            (measure) =>
-              new MeasurePartwise({
-                contents: [
-                  measure.getValues().map((c) => {
-                    if (!asserts.isNote(c)) {
-                      return c;
-                    }
-
-                    const semitone = getPitch(c.getVariation());
-                    if (semitone == null || notes.contains(semitone)) {
-                      return c;
-                    }
-
-                    return asRest(c);
-                  }),
-                ],
-              }),
-          ),
-        ],
-      }),
-  );
-  filteredScore.getRoot().setParts(parts);
-
-  return filteredScore;
 }
