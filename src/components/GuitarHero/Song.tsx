@@ -1,30 +1,17 @@
 import { useContext, useEffect } from "react";
 import { useThree } from "@react-three/fiber";
-import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import useAudioPlayer from "../../hooks/useAudioPlayer.ts";
 import type { Part } from "../../types";
-import { useUniquePitches } from "../../hooks/useUniquePitches.ts";
-import useRollingNoteRange from "../../hooks/useRollingNoteRange.ts";
 import SongContext from "../../context/SongContext.ts";
 import ThreePart from "./Part.tsx";
+import type { InstrumentName } from "soundfont-player";
 
 interface SongProps {
-  osmd: OpenSheetMusicDisplay;
-  parts?: Part[];
+  parts: Part[];
 }
 
-export default function Song({ osmd, parts: _parts }: SongProps) {
+export default function Song({ parts: parts }: SongProps) {
   const { containerWidth, containerHeight } = useContext(SongContext);
-  const pitches = useUniquePitches(osmd);
-  const parts =
-    _parts ??
-    ([
-      {
-        display: true,
-        notes: pitches,
-      },
-    ] as Part[]);
-  const { notes, removeNote } = useRollingNoteRange(osmd, !!pitches);
   const { clock } = useThree();
   const { loadInstrument, playNote, status } = useAudioPlayer();
 
@@ -38,18 +25,18 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
       return;
     }
 
-    loadInstrument("acoustic_grand_piano").then(() => {
+    Promise.all(
+      parts
+        .filter((p) => !!p.instrument)
+        .map((p) => loadInstrument(p.instrument as InstrumentName)),
+    ).then(() => {
       clock.start();
     });
-  }, [osmd, clock, status, loadInstrument]);
-
-  if (!pitches) {
-    return null;
-  }
+  }, [clock, status, loadInstrument, parts]);
 
   return parts.map((part, i) => (
     <ThreePart
-      key={part.notes.join(",")}
+      key={part.id}
       x={containerWidth / -2 + tileWidth * (i % columnCount) + tileWidth / 2}
       y={
         containerHeight / -2 +
@@ -58,9 +45,7 @@ export default function Song({ osmd, parts: _parts }: SongProps) {
       }
       width={tileWidth}
       height={tileHeight}
-      notesToPlay={notes.filter((n) => part.notes.contains(n.note))}
-      notesInPart={part.notes}
-      removeNote={removeNote}
+      notes={part.notes}
       playNote={playNote}
     />
   ));

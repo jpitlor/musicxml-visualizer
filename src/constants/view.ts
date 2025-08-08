@@ -1,6 +1,6 @@
 export const View = {
-  SheetMusic: "SheetMusic",
-  GuitarHero: "GuitarHero",
+  SheetMusic: "SheetMusic" as ViewType,
+  GuitarHero: "GuitarHero" as ViewType,
 };
 
-export type ViewType = (typeof View)[keyof typeof View];
+export type ViewType = "SheetMusic" | "GuitarHero";

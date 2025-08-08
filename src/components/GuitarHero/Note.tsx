@@ -14,11 +14,10 @@ interface NoteProps {
     pitch: number,
     duration: number,
   ) => void;
-  afterPlay: () => void;
   path: [number, number, number, number];
 }
 
-export default function Note({ note, playNote, afterPlay, path }: NoteProps) {
+export default function Note({ note, playNote, path }: NoteProps) {
   const { containerHeight, containerWidth } = useContext(SongContext);
   const circle = useRef<Mesh | undefined>(undefined);
   const [startX, startY, endX, endY] = path;
@@ -39,7 +38,6 @@ export default function Note({ note, playNote, afterPlay, path }: NoteProps) {
 
     if (note.time - clock.elapsedTime < 0.1) {
       playNote("acoustic_grand_piano", note.note, note.length);
-      afterPlay();
     }
   });
 

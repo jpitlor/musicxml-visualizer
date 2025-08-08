@@ -1,4 +1,4 @@
-import range from "lodash.range";
+import { range } from "lodash";
 import { extend } from "@react-three/fiber";
 import { Line2 as Line2Old } from "three/addons/lines/Line2.js";
 import { LineMaterial as LineMaterialOld } from "three/addons/lines/LineMaterial.js";

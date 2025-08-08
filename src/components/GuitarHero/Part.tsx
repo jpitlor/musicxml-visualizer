@@ -5,15 +5,14 @@ import type { Note } from "../../types";
 import ThreeNote from "./Note.tsx";
 import to2Places from "../../utils/to2Places.ts";
 import type { InstrumentName } from "soundfont-player";
+import { uniq } from "lodash";
 
 interface PartProps {
   x: number;
   y: number;
   width: number;
   height: number;
-  notesInPart: number[];
-  notesToPlay: Note[];
-  removeNote: (noteId: string) => void;
+  notes: Note[];
   playNote: (
     instrument: InstrumentName,
     pitch: number,
@@ -26,29 +25,24 @@ export default function Part({
   y,
   width,
   height,
-  notesInPart,
-  notesToPlay,
-  removeNote,
+  notes,
   playNote,
 }: PartProps) {
-  const radGap = Math.PI / (3 * (notesInPart.length - 1));
+  const uniqueNotes = uniq(notes.map((n) => n.note));
+  const radGap = Math.PI / (3 * (uniqueNotes.length - 1));
 
   return (
     <React.Fragment>
       <Staff
-        lineCount={notesInPart.length}
+        lineCount={uniqueNotes.length}
         middleX={x}
         middleY={y}
         width={width}
         height={height}
       />
-      {notesToPlay.map((n) => {
-        const staffLineIndex = notesInPart.indexOf(n.note);
+      {notes.map((n) => {
+        const staffLineIndex = uniqueNotes.indexOf(n.note);
         const leftOffset = Math.cos(RAD_OF_225_DEG + radGap * staffLineIndex);
-
-        function afterPlay() {
-          removeNote(n.id);
-        }
 
         return (
           <ThreeNote
@@ -60,7 +54,6 @@ export default function Part({
               to2Places(x + (leftOffset * width * 7) / 8),
               to2Places(y + height / -2),
             ]}
-            afterPlay={afterPlay}
             playNote={playNote}
           />
         );

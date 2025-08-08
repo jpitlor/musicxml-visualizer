@@ -1,5 +1,5 @@
 import { type ChangeEvent, useContext } from "react";
-import { View } from "../constants/view.ts";
+import { View, type ViewType } from "../constants/view.ts";
 import AppContext from "../context/AppContext.ts";
 
 export default function PiecePicker() {
@@ -12,7 +12,6 @@ export default function PiecePicker() {
       return;
     }
 
-    // TODO: Support compressed files
     const reader = new FileReader();
     reader.readAsText(file, "UTF-8");
     reader.onload = function (evt) {
@@ -36,7 +35,7 @@ export default function PiecePicker() {
       return;
     }
 
-    setType(item.value);
+    setType(item.value as ViewType);
   }
 
   function onPlayerCountChange(e: ChangeEvent<HTMLInputElement>) {

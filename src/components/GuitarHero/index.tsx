@@ -1,47 +1,30 @@
 import { Canvas } from "@react-three/fiber";
 import Song from "./Song.tsx";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
-import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
+import { useState } from "react";
 import type { Part } from "../../types";
 import useElementSize from "../../hooks/useElementSize.ts";
 import SongContext from "../../context/SongContext.ts";
 
 interface GuitarHeroProps {
-  xml: string;
   className?: string;
   showReset?: boolean;
-  parts?: Part[];
+  parts: Part[];
 }
 
 const containerId = "osmd";
 
 export default function GuitarHero({
-  xml,
   className,
   showReset = true,
   parts,
 }: GuitarHeroProps) {
   const [containerSize, containerRef] = useElementSize<HTMLCanvasElement>();
   const [key, setKey] = useState(0);
-  const [osmd, setOsmd] = useState<OpenSheetMusicDisplay | null>(null);
 
   function handleReset() {
     setKey((k) => k + 1);
   }
-
-  useEffect(() => {
-    if (!xml) {
-      return;
-    }
-
-    const newOsmd = new OpenSheetMusicDisplay(containerId, {
-      autoResize: true,
-      backend: "svg",
-      drawTitle: false,
-    });
-    newOsmd.load(xml).then(() => setOsmd(newOsmd));
-  }, [xml]);
 
   return (
     <SongContext
@@ -84,7 +67,7 @@ export default function GuitarHero({
             decay={0}
             intensity={Math.PI}
           />
-          {osmd && <Song osmd={osmd} key={key} parts={parts} />}
+          <Song key={key} parts={parts} />
         </Canvas>
       </div>
     </SongContext>

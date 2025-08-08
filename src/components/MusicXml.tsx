@@ -1,28 +1,33 @@
-import { View, type ViewType } from "../constants/view";
 import classNames from "classnames";
 import SheetMusic from "./SheetMusic";
 import GuitarHero from "./GuitarHero";
 import type { Part } from "../types";
 
-interface MusicXmlProps {
+interface SheetMusicMusicXmlProps {
   xml: string;
-  view: ViewType;
+  view: "SheetMusic";
   className?: string;
-  parts?: Part[];
 }
 
-export default function MusicXml({
-  xml,
-  view,
-  className,
-  parts,
-}: MusicXmlProps) {
-  if (view === View.SheetMusic) {
+interface GuitarHeroMusicXmlProps {
+  view: "GuitarHero";
+  className?: string;
+  parts: Part[];
+}
+
+type MusicXmlProps = SheetMusicMusicXmlProps | GuitarHeroMusicXmlProps;
+
+export default function MusicXml(props: MusicXmlProps) {
+  const { view, className } = props;
+
+  if (view === "SheetMusic") {
+    const { xml } = props;
     return <SheetMusic xml={xml} className={className} />;
   }
 
-  if (view === View.GuitarHero) {
-    return <GuitarHero xml={xml} className={className} parts={parts} />;
+  if (view === "GuitarHero") {
+    const { parts } = props;
+    return <GuitarHero className={className} parts={parts} />;
   }
 
   return (

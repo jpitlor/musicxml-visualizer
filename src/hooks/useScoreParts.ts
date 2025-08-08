@@ -1,33 +1,41 @@
-import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
-import type { Note } from "../types";
+import type { Part } from "../types";
+import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
+import { HiddenDivId } from "../constants/osmd.ts";
+import { useEffect, useState } from "react";
 
-interface RollingNoteRange {
-  notes: Note[];
-  removeNote: (noteId: string) => void;
-}
-
-export default function useRollingNoteRange(
-  osmd: OpenSheetMusicDisplay,
-  doIfTrue: boolean,
-): RollingNoteRange {
-  const [notes, setNotes] = useState<Note[]>([]);
+export default function useScoreParts(xml: string): Part[] {
+  const [osmd, setOsmd] = useState<OpenSheetMusicDisplay | undefined>();
+  const [parts, setParts] = useState<Part[]>([]);
 
   useEffect(() => {
-    if (!doIfTrue) {
+    if (!xml) {
       return;
     }
 
-    const _notes: Note[] = [];
-    const iterator = osmd.cursor.iterator;
+    const osmd = new OpenSheetMusicDisplay(HiddenDivId);
+    osmd.load(xml).then(() => setOsmd(osmd));
+  }, [xml]);
 
-    while (
-      !iterator.EndReached && // there's more notes
-      (_notes.length === 0 ||
-        notes.length === 0 ||
-        _notes.last().time - notes.last().time < 10) // and we haven't built a 10-second buffer
-    ) {
+  useEffect(() => {
+    if (!osmd) {
+      return;
+    }
+
+    const _parts = osmd.Sheet.Parts.map(
+      (p) =>
+        ({
+          id: uuidv4(),
+          name: p.Name,
+          notes: [],
+          display: false,
+          play: false,
+          source: "fromScore",
+        }) as Part,
+    );
+    osmd.cursor.reset();
+    const iterator = osmd.cursor.iterator;
+    while (!iterator.EndReached) {
       const voices = iterator.CurrentVoiceEntries;
       for (let i = 0; i < voices.length; i++) {
         const notes = voices[i].Notes;
@@ -45,8 +53,9 @@ export default function useRollingNoteRange(
             continue;
           }
 
-          _notes.push({
+          _parts[i].notes.push({
             id: uuidv4(),
+            name: note.Pitch.ToStringShort(),
             note: note.halfTone,
             length: note.Length.RealValue * secondsPerMeasure,
             // The note should show up on screen when it should
@@ -60,19 +69,8 @@ export default function useRollingNoteRange(
       iterator.moveToNext();
     }
 
-    if (_notes.length > 0) {
-      setNotes((x) => x.concat(_notes));
-    }
-  }, [osmd, notes, doIfTrue]);
+    setParts(_parts);
+  }, [osmd]);
 
-  function removeNote(noteId: string) {
-    setNotes((n) => {
-      const i = n.findIndex((x) => x.id === noteId);
-      const _notes = [...notes];
-      _notes.splice(i, 1);
-      return _notes;
-    });
-  }
-
-  return { notes, removeNote };
+  return parts;
 }
