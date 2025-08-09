@@ -13,6 +13,7 @@ interface PartProps {
   width: number;
   height: number;
   notes: Note[];
+  instrument: InstrumentName;
   playNote?: (
     instrument: InstrumentName,
     pitch: number,
@@ -26,6 +27,7 @@ export default function Part({
   width,
   height,
   notes,
+  instrument,
   playNote,
 }: PartProps) {
   const [playedNotes, setPlayedNotes] = useState<string[]>([]);
@@ -54,6 +56,7 @@ export default function Part({
           return (
             <ThreeNote
               key={n.id}
+              instrument={instrument}
               note={n}
               path={[
                 to2Places(x + (leftOffset * width) / 3),

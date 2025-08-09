@@ -51,6 +51,7 @@ export default function Song({ parts: parts }: SongProps) {
           width={tileWidth}
           height={tileHeight}
           notes={part.notes}
+          instrument={part.instrument}
           playNote={part.play ? playNote : undefined}
         />
       ))}
@@ -62,6 +63,7 @@ export default function Song({ parts: parts }: SongProps) {
           width={tileWidth}
           height={tileHeight}
           notes={part.notes}
+          instrument={part.instrument}
           playNote={playNote}
         />
       ))}

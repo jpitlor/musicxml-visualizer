@@ -9,6 +9,7 @@ import SongContext from "../../context/SongContext.ts";
 
 interface NoteProps {
   note: Note;
+  instrument: InstrumentName;
   playNote?: (
     instrument: InstrumentName,
     pitch: number,
@@ -18,7 +19,13 @@ interface NoteProps {
   path: [number, number, number, number];
 }
 
-export default function Note({ note, playNote, path, removeNote }: NoteProps) {
+export default function Note({
+  note,
+  instrument,
+  playNote,
+  path,
+  removeNote,
+}: NoteProps) {
   const { containerHeight, containerWidth } = useContext(SongContext);
   const circle = useRef<Mesh | undefined>(undefined);
   const [startX, startY, endX, endY] = path;
@@ -38,7 +45,7 @@ export default function Note({ note, playNote, path, removeNote }: NoteProps) {
     }
 
     if (note.time - clock.elapsedTime < 0.1) {
-      playNote?.("acoustic_grand_piano", note.note, note.length);
+      playNote?.(instrument, note.note, note.length);
       removeNote(note.id);
     }
   });
