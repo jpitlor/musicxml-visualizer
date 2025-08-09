@@ -6,7 +6,7 @@ export interface Part {
   source: "allOfSomeNotes" | "fromScore";
   display: boolean;
   play: boolean;
-  instrument?: InstrumentName;
+  instrument: InstrumentName;
   notes: Note[];
 }
 

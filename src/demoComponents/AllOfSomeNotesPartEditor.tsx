@@ -82,7 +82,9 @@ export default function AllOfSomeNotesPartEditor({ part }: PartEditorProps) {
               >
                 {Object.entries(Instruments).map(
                   ([instrumentName, humanName]) => (
-                    <option value={instrumentName}>{humanName}</option>
+                    <option value={instrumentName} key={instrumentName}>
+                      {humanName}
+                    </option>
                   ),
                 )}
               </select>

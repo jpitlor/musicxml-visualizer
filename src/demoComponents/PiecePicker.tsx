@@ -81,7 +81,7 @@ export default function PiecePicker() {
           name="playerCount"
           id="playerCount"
           type="number"
-          min="1"
+          min="0"
           max="9"
           step="1"
           onChange={onPlayerCountChange}

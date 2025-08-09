@@ -32,6 +32,7 @@ function App() {
               source: "allOfSomeNotes",
               name: `Part ${i}`,
               notes: [],
+              instrument: "acoustic_grand_piano",
             }) as Part,
         ),
       ]);
@@ -80,12 +81,12 @@ function App() {
         <PiecePicker />
         {type === "GuitarHero" && xml && <BackgroundTrackToggler />}
         {type === "GuitarHero" && xml && <PartPicker />}
-        {/*{((type === View.GuitarHero && parts.length > playerCount) ||*/}
-        {/*  (type == View.SheetMusic && !!xml)) && (*/}
-        {/*  <div className="bg-white mt-4 p-4 rounded shadow">*/}
-        {/*    <MusicXml parts={parts} xml={xml} view={type} />*/}
-        {/*  </div>*/}
-        {/*)}*/}
+        {((type === View.GuitarHero && parts.length > playerCount) ||
+          (type == View.SheetMusic && !!xml)) && (
+          <div className="bg-white mt-4 p-4 rounded shadow">
+            <MusicXml parts={parts} xml={xml} view={type} />
+          </div>
+        )}
       </div>
     </AppContext>
   );

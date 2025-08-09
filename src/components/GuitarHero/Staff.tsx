@@ -24,7 +24,7 @@ export default function Staff({
   height,
   width,
 }: StaffProps) {
-  const radGap = Math.PI / (3 * (lineCount - 1));
+  const radGap = lineCount === 1 ? 0 : Math.PI / (3 * (lineCount - 1));
 
   return range(0, lineCount).map((i) => {
     const leftOffset = Math.cos(RAD_OF_225_DEG + radGap * i);

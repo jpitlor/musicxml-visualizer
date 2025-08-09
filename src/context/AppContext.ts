@@ -18,7 +18,7 @@ const AppContext = React.createContext<AppContextType>({
   setXml: () => {},
   type: View.GuitarHero,
   setType: () => {},
-  playerCount: 1,
+  playerCount: 0,
   setPlayerCount: () => {},
   parts: [],
   setPart: () => {},

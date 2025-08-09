@@ -22,6 +22,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@react-three/fiber": "^9.2.0",
     "@stringsync/musicxml": "^0.3.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21",
     "opensheetmusicdisplay": "^1.9.0",

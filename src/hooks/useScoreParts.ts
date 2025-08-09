@@ -31,6 +31,7 @@ export default function useScoreParts(xml: string): Part[] {
           display: false,
           play: false,
           source: "fromScore",
+          instrument: "acoustic_grand_piano",
         }) as Part,
     );
     osmd.cursor.reset();
@@ -53,7 +54,14 @@ export default function useScoreParts(xml: string): Part[] {
             continue;
           }
 
-          _parts[i].notes.push({
+          const part = _parts.find(
+            (p) => p.name === voices[i].ParentVoice.Parent.Name,
+          );
+          if (!part) {
+            continue;
+          }
+
+          part.notes.push({
             id: uuidv4(),
             name: note.Pitch.ToStringShort(),
             note: note.halfTone,
