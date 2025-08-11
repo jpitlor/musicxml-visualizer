@@ -7,10 +7,10 @@ interface AppContextType {
   setXml: (xml: string) => void;
   type: ViewType;
   setType: (type: ViewType) => void;
-  playerCount: number;
-  setPlayerCount: (playerCount: number) => void;
   parts: Part[];
   setPart: (part: Part) => void;
+  addPart: () => void;
+  removePart: (partId: string) => void;
 }
 
 const AppContext = React.createContext<AppContextType>({
@@ -18,10 +18,10 @@ const AppContext = React.createContext<AppContextType>({
   setXml: () => {},
   type: View.GuitarHero,
   setType: () => {},
-  playerCount: 0,
-  setPlayerCount: () => {},
   parts: [],
   setPart: () => {},
+  addPart: () => {},
+  removePart: () => {},
 });
 
 export default AppContext;

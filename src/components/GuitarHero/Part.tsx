@@ -6,6 +6,7 @@ import ThreeNote from "./Note.tsx";
 import to2Places from "../../utils/to2Places.ts";
 import type { InstrumentName } from "soundfont-player";
 import { uniq } from "lodash";
+import Line from "./Line.tsx";
 
 interface PartProps {
   x: number;
@@ -40,6 +41,18 @@ export default function Part({
 
   return (
     <React.Fragment>
+      <Line
+        points={[x - width / 2, y - height / 2, x + width / 2, y - height / 2]}
+      />
+      <Line
+        points={[x - width / 2, y - height / 2, x - width / 2, y + height / 2]}
+      />
+      <Line
+        points={[x + width / 2, y + height / 2, x + width / 2, y - height / 2]}
+      />
+      <Line
+        points={[x + width / 2, y + height / 2, x - width / 2, y + height / 2]}
+      />
       <Staff
         lineCount={uniqueNotes.length}
         middleX={x}

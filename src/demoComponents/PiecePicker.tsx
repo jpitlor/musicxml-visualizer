@@ -3,8 +3,7 @@ import { View, type ViewType } from "../constants/view.ts";
 import AppContext from "../context/AppContext.ts";
 
 export default function PiecePicker() {
-  const { setXml, type, setType, playerCount, setPlayerCount } =
-    useContext(AppContext);
+  const { setXml, type, setType } = useContext(AppContext);
 
   function onXmlChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.item(0);
@@ -38,10 +37,6 @@ export default function PiecePicker() {
     setType(item.value as ViewType);
   }
 
-  function onPlayerCountChange(e: ChangeEvent<HTMLInputElement>) {
-    setPlayerCount(+e.target.value);
-  }
-
   return (
     <form className="bg-white p-4 rounded shadow">
       <div className="flex flex-row items-center">
@@ -72,22 +67,6 @@ export default function PiecePicker() {
           <option value={View.SheetMusic}>Sheet Music</option>
           <option value={View.GuitarHero}>Guitar Hero</option>
         </select>
-      </div>
-      <div className="flex flex-row items-center mt-2">
-        <label htmlFor="playerCount">
-          <strong>Number of Players</strong>
-        </label>
-        <input
-          name="playerCount"
-          id="playerCount"
-          type="number"
-          min="0"
-          max="9"
-          step="1"
-          onChange={onPlayerCountChange}
-          className="ml-4 border-2 border-black py-1 px-2 rounded shadow"
-          value={playerCount}
-        />
       </div>
     </form>
   );
