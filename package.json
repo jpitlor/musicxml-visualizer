@@ -16,6 +16,10 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "workspaces": [
+    "example",
+    "lib/@jpitlor/musicxml-visualizer"
+  ],
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",

@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
-import AppContext from "../context/AppContext.ts";
-import AllOfSomeNotesPartEditor from "./AllOfSomeNotesPartEditor.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import classNames from "classnames";
+import AppContext from "../context/AppContext";
+import AllOfSomeNotesPartEditor from "./AllOfSomeNotesPartEditor";
 
 export default function PartPicker() {
   const { parts, addPart, removePart } = useContext(AppContext);

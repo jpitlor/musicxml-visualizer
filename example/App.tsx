@@ -1,16 +1,19 @@
-import MusicXml from "./components/MusicXml.tsx";
-import { View, type ViewType } from "./constants/view.ts";
+import MusicXml from "@jpitlor/musicxml-visualizer/components/MusicXml";
+import type { Note, Part } from "@jpitlor/musicxml-visualizer/types";
 import { useEffect, useState } from "react";
 import { uniq } from "lodash";
 import { v4 as uuidv4 } from "uuid";
-import type { Note, Part } from "./types";
-import AppContext from "./context/AppContext.ts";
-import PiecePicker from "./demoComponents/PiecePicker.tsx";
-import PartPicker from "./demoComponents/PartPicker.tsx";
-import BackgroundTrackToggler from "./demoComponents/BackgroundTrackToggler.tsx";
-import { HiddenDivId } from "./constants/osmd.ts";
-import useScoreParts from "./hooks/useScoreParts.ts";
 import React from "react";
+import {
+  View,
+  type ViewType,
+} from "../lib/@jpitlor/musicxml-visualizer/constants/view";
+import AppContext from "./context/AppContext";
+import PiecePicker from "./components/PiecePicker";
+import PartPicker from "./components/PartPicker";
+import BackgroundTrackToggler from "./components/BackgroundTrackToggler";
+import { HiddenDivId } from "./constants/osmd";
+import useScoreParts from "./hooks/useScoreParts";
 
 function App() {
   const [play, setPlay] = useState(false);

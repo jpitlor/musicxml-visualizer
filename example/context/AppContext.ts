@@ -1,6 +1,9 @@
 import React from "react";
-import { View, type ViewType } from "../constants/view.ts";
-import type { Note, Part } from "../types";
+import {
+  View,
+  type ViewType,
+} from "@jpitlor/musicxml-visualizer/constants/view";
+import type { Note, Part } from "@jpitlor/musicxml-visualizer/types";
 
 interface AppContextType {
   allNotes: Note[];

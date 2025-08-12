@@ -1,8 +1,8 @@
-import type { Part } from "../types";
-import { Instruments } from "../constants/instruments.ts";
+import type { Part } from "@jpitlor/musicxml-visualizer/types";
+import { Instruments } from "@jpitlor/musicxml-visualizer/constants/instruments";
 import { type ChangeEvent, useContext, useMemo } from "react";
 import type { InstrumentName } from "soundfont-player";
-import AppContext from "../context/AppContext.ts";
+import AppContext from "../context/AppContext";
 import { uniq } from "lodash";
 
 interface PartEditorProps {

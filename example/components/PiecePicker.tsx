@@ -1,6 +1,9 @@
 import { type ChangeEvent, useContext } from "react";
-import { View, type ViewType } from "../constants/view.ts";
-import AppContext from "../context/AppContext.ts";
+import {
+  View,
+  type ViewType,
+} from "@jpitlor/musicxml-visualizer/constants/view";
+import AppContext from "../context/AppContext";
 
 export default function PiecePicker() {
   const { setXml, type, setType } = useContext(AppContext);

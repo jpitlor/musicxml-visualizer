@@ -1,7 +1,7 @@
-import type { Part } from "../types";
-import { Instruments } from "../constants/instruments.ts";
+import type { Part } from "@jpitlor/musicxml-visualizer/types";
+import { Instruments } from "@jpitlor/musicxml-visualizer/constants/instruments";
 import { type ChangeEvent, useContext } from "react";
-import AppContext from "../context/AppContext.ts";
+import AppContext from "../context/AppContext";
 import type { InstrumentName } from "soundfont-player";
 
 interface FromScorePartEditorProps {

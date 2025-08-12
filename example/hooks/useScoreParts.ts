@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import type { Part } from "../types";
+import type { Part } from "@jpitlor/musicxml-visualizer/types";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
-import { HiddenDivId } from "../constants/osmd.ts";
 import { useEffect, useState } from "react";
+import { HiddenDivId } from "../constants/osmd";
 
 export default function useScoreParts(xml: string): Part[] {
   const [osmd, setOsmd] = useState<OpenSheetMusicDisplay | undefined>();

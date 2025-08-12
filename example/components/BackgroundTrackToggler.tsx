@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import AppContext from "../context/AppContext.ts";
-import FromScorePartEditor from "./FromScorePartEditor.tsx";
+import AppContext from "../context/AppContext";
+import FromScorePartEditor from "./FromScorePartEditor";
 
 export default function BackgroundTrackToggler() {
   const { parts } = useContext(AppContext);
