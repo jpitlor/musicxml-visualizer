@@ -1,7 +1,7 @@
 import { extend } from "@react-three/fiber";
 import { Line2 as Line2Old } from "three/addons/lines/Line2.js";
 import { LineMaterial as LineMaterialOld } from "three/addons/lines/LineMaterial.js";
-import LineGeometry from "./LineGeometry.tsx";
+import LineGeometry from "./LineGeometry";
 
 const Line2 = extend(Line2Old);
 const LineMaterial = extend(LineMaterialOld);

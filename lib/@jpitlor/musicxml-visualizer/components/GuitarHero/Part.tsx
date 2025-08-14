@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import Staff from "./Staff.tsx";
-import { RAD_OF_225_DEG } from "../../constants/canvas.ts";
+import Staff from "./Staff";
+import { RAD_OF_225_DEG } from "../../constants/canvas";
 import type { Note } from "../../types";
-import ThreeNote from "./Note.tsx";
-import to2Places from "../../utils/to2Places.ts";
+import ThreeNote from "./Note";
+import to2Places from "../../utils/to2Places";
 import type { InstrumentName } from "soundfont-player";
 import { uniq } from "lodash";
-import Line from "./Line.tsx";
+import Line from "./Line";
 
 interface PartProps {
   x: number;

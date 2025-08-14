@@ -1,7 +1,7 @@
 import { range } from "lodash";
-import { RAD_OF_225_DEG } from "../../constants/canvas.ts";
-import to2Places from "../../utils/to2Places.ts";
-import Line from "./Line.tsx";
+import { RAD_OF_225_DEG } from "../../constants/canvas";
+import to2Places from "../../utils/to2Places";
+import Line from "./Line";
 
 interface StaffProps {
   lineCount: number;

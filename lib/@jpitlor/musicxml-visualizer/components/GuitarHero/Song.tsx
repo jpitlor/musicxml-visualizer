@@ -1,10 +1,10 @@
 import { useContext, useEffect } from "react";
-import { useThree } from "@react-three/fiber";
-import useAudioPlayer from "../../../../../src/hooks/useAudioPlayer.ts";
-import type { Part } from "../../types";
-import SongContext from "../../context/SongContext.ts";
-import ThreePart from "./Part.tsx";
 import React from "react";
+import { useThree } from "@react-three/fiber";
+import useAudioPlayer from "../../hooks/useAudioPlayer";
+import type { Part } from "../../types";
+import SongContext from "../../context/SongContext";
+import ThreePart from "./Part";
 
 interface SongProps {
   parts: Part[];

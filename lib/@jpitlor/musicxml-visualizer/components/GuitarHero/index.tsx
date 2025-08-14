@@ -1,11 +1,11 @@
 import { Canvas } from "@react-three/fiber";
 import classNames from "classnames";
-import Song from "./Song.tsx";
+import Song from "./Song";
 import type { Part } from "../../types";
-import SongContext from "../../context/SongContext.ts";
+import SongContext from "../../context/SongContext";
 import { useMeasure } from "@uidotdev/usehooks";
-import Camera from "./Camera.tsx";
-import Line from "./Line.tsx";
+import Camera from "./Camera";
+import Line from "./Line";
 
 interface GuitarHeroProps {
   className?: string;

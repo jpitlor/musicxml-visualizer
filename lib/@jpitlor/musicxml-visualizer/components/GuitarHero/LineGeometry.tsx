@@ -1,5 +1,5 @@
 import { LineGeometry as LineGeometryOld } from "three/addons/lines/LineGeometry.js";
-import type { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.ts";
+import type { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import { extend } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 

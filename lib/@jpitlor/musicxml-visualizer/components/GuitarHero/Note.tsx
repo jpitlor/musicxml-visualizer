@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { lerp } from "three/src/math/MathUtils";
 import type { InstrumentName } from "soundfont-player";
 import type { Note } from "../../types";
-import SongContext from "../../context/SongContext.ts";
+import SongContext from "../../context/SongContext";
 
 interface NoteProps {
   note: Note;
