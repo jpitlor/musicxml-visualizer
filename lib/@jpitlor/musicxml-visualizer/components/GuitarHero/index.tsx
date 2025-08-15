@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import classNames from "classnames";
 import Song from "./Song";
-import type { Part } from "../../types";
+import type { Part, Tempo } from "../../types";
 import SongContext from "../../context/SongContext";
 import { useMeasure } from "@uidotdev/usehooks";
 import Camera from "./Camera";
@@ -10,18 +10,23 @@ import Line from "./Line";
 interface GuitarHeroProps {
   className?: string;
   parts: Part[];
+  tempos: Tempo[];
 }
 
 const containerId = "osmd";
 
-export default function GuitarHero({ className, parts }: GuitarHeroProps) {
+export default function GuitarHero({
+  className,
+  parts,
+  tempos,
+}: GuitarHeroProps) {
   const [containerRef, containerSize] = useMeasure();
   const containerWidth = containerSize.width ?? 0;
   const containerHeight = containerSize.height ?? 0;
 
   return (
-    <SongContext value={{ containerWidth, containerHeight }}>
-      <div className="h-96 flex flex-col gap-4">
+    <SongContext value={{ containerWidth, containerHeight, tempos }}>
+      <div className="h-full flex flex-col gap-4">
         <div id={containerId} className="hidden" />
         <Canvas
           className={classNames("flex-1", className)}

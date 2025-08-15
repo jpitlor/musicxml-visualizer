@@ -1,12 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
-import type { Part } from "@jpitlor/musicxml-visualizer/types";
+import type { Part, Tempo } from "@jpitlor/musicxml-visualizer/types";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import { useEffect, useState } from "react";
 import { HiddenDivId } from "../constants/osmd";
 
-export default function useScoreParts(xml: string): Part[] {
+interface Score {
+  parts: Part[];
+  tempos: Tempo[];
+}
+
+export default function useScore(xml: string): Score {
   const [osmd, setOsmd] = useState<OpenSheetMusicDisplay | undefined>();
   const [parts, setParts] = useState<Part[]>([]);
+  const [tempos, setTempos] = useState<Tempo[]>([]);
 
   useEffect(() => {
     if (!xml) {
@@ -22,6 +28,12 @@ export default function useScoreParts(xml: string): Part[] {
       return;
     }
 
+    const _tempos = [
+      {
+        secondsPerBeat: osmd.Sheet.getExpressionsStartTempoInBPM() || 60,
+        time: 0,
+      } as Tempo,
+    ];
     const _parts = osmd.Sheet.Parts.map(
       (p) =>
         ({
@@ -47,6 +59,16 @@ export default function useScoreParts(xml: string): Part[] {
         const secondsPerMeasure =
           (notes[0].SourceMeasure.ActiveTimeSignature.Numerator * 60) /
           beatsPerMinute;
+        const secondsPerBeat = 60 / beatsPerMinute;
+        if (
+          _tempos.length === 0 ||
+          secondsPerBeat != _tempos[_tempos.length - 1].secondsPerBeat
+        ) {
+          _tempos.push({
+            secondsPerBeat,
+            time: iterator.currentTimeStamp.RealValue,
+          } as Tempo);
+        }
 
         for (let j = 0; j < notes.length; j++) {
           const note = notes[j];
@@ -78,7 +100,8 @@ export default function useScoreParts(xml: string): Part[] {
     }
 
     setParts(_parts);
+    setTempos(_tempos);
   }, [osmd]);
 
-  return parts;
+  return { parts, tempos };
 }

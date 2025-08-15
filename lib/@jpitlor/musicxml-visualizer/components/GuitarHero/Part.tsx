@@ -6,7 +6,8 @@ import ThreeNote from "./Note";
 import to2Places from "../../utils/to2Places";
 import type { InstrumentName } from "soundfont-player";
 import { uniq } from "lodash";
-import Line from "./Line";
+import Box from "./Box";
+import PulsingLine from "./PulsingLine";
 
 interface PartProps {
   x: number;
@@ -41,17 +42,18 @@ export default function Part({
 
   return (
     <React.Fragment>
-      <Line
-        points={[x - width / 2, y - height / 2, x + width / 2, y - height / 2]}
+      <Box
+        startX={x - width / 2}
+        endX={x + width / 2}
+        startY={y - height / 2}
+        endY={y + height / 2}
       />
-      <Line
-        points={[x - width / 2, y - height / 2, x - width / 2, y + height / 2]}
-      />
-      <Line
-        points={[x + width / 2, y + height / 2, x + width / 2, y - height / 2]}
-      />
-      <Line
-        points={[x + width / 2, y + height / 2, x - width / 2, y + height / 2]}
+      <PulsingLine
+        x={x}
+        y={y - height / 2}
+        width={width}
+        maxHeight={5}
+        minHeight={2}
       />
       <Staff
         lineCount={uniqueNotes.length}

@@ -28,6 +28,11 @@ export default function Staff({
     const endX = to2Places(middleX + (leftOffset * width * 7) / 8);
     const endY = to2Places(middleY + (height * -1) / 2);
 
-    return <Line points={[startX, startY, endX, endY]} />;
+    return (
+      <Line
+        points={[startX, startY, endX, endY]}
+        key={`${startX}-${endX}-${startY}-${endY}`}
+      />
+    );
   });
 }

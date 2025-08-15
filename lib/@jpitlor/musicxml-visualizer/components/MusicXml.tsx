@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import SheetMusic from "./SheetMusic";
 import GuitarHero from "./GuitarHero";
-import type { Part } from "../types";
+import type { Part, Tempo } from "../types";
 
 interface SheetMusicMusicXmlProps {
   xml: string;
@@ -13,6 +13,7 @@ interface GuitarHeroMusicXmlProps {
   view: "GuitarHero";
   className?: string;
   parts: Part[];
+  tempos: Tempo[];
 }
 
 type MusicXmlProps = SheetMusicMusicXmlProps | GuitarHeroMusicXmlProps;
@@ -26,8 +27,8 @@ export default function MusicXml(props: MusicXmlProps) {
   }
 
   if (view === "GuitarHero") {
-    const { parts } = props;
-    return <GuitarHero className={className} parts={parts} />;
+    const { parts, tempos } = props;
+    return <GuitarHero className={className} parts={parts} tempos={tempos} />;
   }
 
   return (

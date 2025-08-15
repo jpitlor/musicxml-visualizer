@@ -13,13 +13,13 @@ import PiecePicker from "./components/PiecePicker";
 import PartPicker from "./components/PartPicker";
 import BackgroundTrackToggler from "./components/BackgroundTrackToggler";
 import { HiddenDivId } from "./constants/osmd";
-import useScoreParts from "./hooks/useScoreParts";
+import useScore from "./hooks/useScore";
 
 function App() {
   const [play, setPlay] = useState(false);
   const [xml, setXml] = useState("");
   const [allNotes, setAllNotes] = useState([] as Note[]);
-  const scoreParts = useScoreParts(xml);
+  const { parts: scoreParts, tempos } = useScore(xml);
   const [type, setType] = useState<ViewType>(View.GuitarHero);
   const [parts, setParts] = useState([] as Part[]);
 
@@ -99,8 +99,8 @@ function App() {
           </React.Fragment>
         )}
         {play && (
-          <div className="bg-white mt-4 p-4 rounded shadow">
-            <MusicXml parts={parts} xml={xml} view={type} />
+          <div className="bg-white p-4 rounded shadow h-full">
+            <MusicXml parts={parts} xml={xml} view={type} tempos={tempos} />
           </div>
         )}
       </div>

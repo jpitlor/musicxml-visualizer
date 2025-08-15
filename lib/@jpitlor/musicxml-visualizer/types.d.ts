@@ -1,5 +1,10 @@
 import type { InstrumentName } from "soundfont-player";
 
+export interface Tempo {
+  time: number;
+  secondsPerBeat: number;
+}
+
 export interface Part {
   id: string;
   name: string;
