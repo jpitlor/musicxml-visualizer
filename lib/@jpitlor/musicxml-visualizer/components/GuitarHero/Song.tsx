@@ -18,7 +18,7 @@ export default function Song({ parts: parts }: SongProps) {
   const displayedParts = parts.filter((p) => p.display);
   const justPlayedParts = parts.filter((p) => p.play && !p.display);
   const columnCount = Math.floor(Math.sqrt(displayedParts.length));
-  const rowCount = displayedParts.length / columnCount;
+  const rowCount = Math.ceil(displayedParts.length / columnCount);
   const tileWidth = containerWidth / columnCount;
   const tileHeight = containerHeight / rowCount;
 
